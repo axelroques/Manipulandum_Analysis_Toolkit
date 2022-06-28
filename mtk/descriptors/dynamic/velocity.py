@@ -100,13 +100,30 @@ def velocity_peak(manipulandum):
 
 def process(manipulandum):
 
-    zc = zero_crossing(manipulandum)
+    zc_x, zc_y = zero_crossing(manipulandum)
     sl_x, sl_y, sl_tot, spd_x, spd_y, spd_tot = compute_mean_velocity(
         manipulandum)
     peak_x_vel_pos, peak_x_vel_neg, peaks_x_vel, \
         peak_y_vel_pos, peak_y_vel_neg, peaks_y_vel = velocity_peak(
             manipulandum)
 
-    return zc, sl_x, sl_y, sl_tot, spd_x, spd_y, spd_tot, \
-        peak_x_vel_pos, peak_x_vel_neg, peaks_x_vel, \
-        peak_y_vel_pos, peak_y_vel_neg, peaks_y_vel
+    manipulandum._results['dynamic'].update({
+        'velocity': {
+            'zc_x': zc_x,
+            'zc_y': zc_y,
+            'sl_x': sl_x,
+            'sl_y': sl_y,
+            'sl_tot': sl_tot,
+            'spd_x': spd_x,
+            'spd_y': spd_y,
+            'spd_tot': spd_tot,
+            'peak_x_vel_pos': peak_x_vel_pos,
+            'peak_x_vel_neg': peak_x_vel_neg,
+            'peaks_x_vel': peaks_x_vel,
+            'peak_y_vel_pos': peak_y_vel_pos,
+            'peak_y_vel_neg': peak_y_vel_neg,
+            'peaks_y_vel': peaks_y_vel
+        }
+    })
+
+    return

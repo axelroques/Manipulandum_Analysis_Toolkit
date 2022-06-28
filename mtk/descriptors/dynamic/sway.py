@@ -42,7 +42,7 @@ def compute_sway_density(manipulandum, radius):
 
         SD.append((SD_pos+SD_neg)/manipulandum.fs)
 
-    return SD
+    return np.array(SD)
 
 
 def filtering(SD, fs, fc=2.5):
@@ -57,14 +57,14 @@ def filtering(SD, fs, fc=2.5):
 
 def peaks_sway_density(manipulandum, SD):
     """
-        Finds the peaks of sway density
-        The sway density signal is first low-pass filtered with a Butterworth filter of
-        order 4 (Jacono et al., 2004). The peaks are found using scipy's find_peaks
-        """
+    Finds the peaks of sway density
+    The sway density signal is first low-pass filtered with a Butterworth filter of
+    order 4 (Jacono et al., 2004). The peaks are found using scipy's find_peaks
+    """
 
     # Mean sway density peak
     i_peaks, _ = find_peaks(filtering(SD, manipulandum.fs, fc=2.5))
-    peaks = np.array(SD)[i_peaks]
+    peaks = SD[i_peaks]
     mean_peaks = np.mean(peaks)
 
     # Mean spatial distance between sway density peaks
@@ -84,4 +84,15 @@ def process(manipulandum):
     i_peaks, peaks, mean_peaks, mean_dist_peaks = peaks_sway_density(
         manipulandum, SD)
 
-    return saps, SD, i_peaks, peaks, mean_peaks, mean_dist_peaks
+    manipulandum._results['dynamic'].update({
+        'sway': {
+            'saps': saps,
+            'SD': SD,
+            'i_peaks': i_peaks,
+            'peaks': peaks,
+            'mean_peaks': mean_peaks,
+            'mean_dist_peaks': mean_dist_peaks
+        }
+    })
+
+    return

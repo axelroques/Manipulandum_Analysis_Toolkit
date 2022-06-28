@@ -33,5 +33,4 @@ def dimensionless_jerk(movement, fs):
     scale = pow(movement_dur, 3)/pow(movement_peak, 2)
 
     # estimate dj
-
     return - scale * sum(pow(jerk, 2)) * dt

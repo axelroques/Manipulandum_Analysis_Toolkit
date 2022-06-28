@@ -4,7 +4,7 @@ import numpy as np
 
 def MSD(signal, n, lag):
     """
-    Mean square displacement
+    Mean square displacement.
     """
 
     msd = 0
@@ -16,10 +16,7 @@ def MSD(signal, n, lag):
 
 def generate_MSDs(manipulandum):
 
-    params = {'min_lag': 1, 'max_lag': 1000, 'n_lags': 50}
-    for key in params.keys():
-        if manipulandum.params['descriptors']['stochastic']['msd'][key]:
-            params[key] = manipulandum.params['descriptors']['stochastic']['msd'][key]
+    params = manipulandum.params['descriptors']['stochastic']['msd']
 
     log_mini = np.round(np.log10(params['min_lag']))
     log_maxi = np.round(np.log10(params['max_lag']))
@@ -37,11 +34,18 @@ def generate_MSDs(manipulandum):
         MSDs[0, count] = MSD(manipulandum.x, manipulandum.n, int(lag))
         MSDs[1, count] = MSD(manipulandum.y, manipulandum.n, int(lag))
 
-    return lags_MSD, MSDs
+    return np.array(lags_MSD), MSDs
 
 
 def process(manipulandum):
 
     lags_MSD, MSDs = generate_MSDs(manipulandum)
 
-    return lags_MSD, MSDs
+    manipulandum._results['stochastic'].update({
+        'msd': {
+            'lags_MSD': lags_MSD,
+            'MSDs': MSDs
+        }
+    })
+
+    return

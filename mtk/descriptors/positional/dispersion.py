@@ -56,18 +56,15 @@ def compute_ranges(manipulandum):
 
     range_x = manipulandum.x.max() - manipulandum.x.min()
     range_y = manipulandum.y.max() - manipulandum.y.min()
-    range_xy = np.sqrt(np.max([(manipulandum.x[i]-manipulandum.x[j])**2 + (manipulandum.y[i]-manipulandum.y[j])**2
-                               for i in range(manipulandum.n) for j in range(i, manipulandum.n)]))
 
-    return range_x, range_y, range_xy
+    # Too long to compute, we skip it for now
+    # range_xy = np.sqrt(np.max([(manipulandum.x[i]-manipulandum.x[j])**2 + (manipulandum.y[i]-manipulandum.y[j])**2
+    #                            for i in range(manipulandum.n) for j in range(i, manipulandum.n)]))
 
-
-def compute_range_ratio(manipulandum):
-
-    range_x, range_y, _ = compute_ranges(manipulandum)
+    range_xy = np.nan
     range_ratio = range_x/range_y
 
-    return range_ratio
+    return range_x, range_y, range_xy, range_ratio
 
 
 def compute_planar_deviation(manipulandum):
@@ -114,21 +111,42 @@ def compute_principal_sway_direction(manipulandum):
 
 def process(manipulandum):
 
-    radius_signal = generate_radius_signal(manipulandum)
     cov = compute_covariance(manipulandum)
     avg = compute_average(manipulandum)
     mean_dist_x, mean_dist_y, mean_dist_radius_signal = compute_distance(
         manipulandum)
     max_x, max_y, max_radius = compute_maximum(manipulandum)
     rms_x, rms_y, rms_radius = compute_RMS(manipulandum)
-    range_x, range_y, range_xy = compute_ranges(manipulandum)
-    range_ratio = compute_range_ratio(manipulandum)
+    range_x, range_y, range_xy, range_ratio = compute_ranges(manipulandum)
     planar_deviation = compute_planar_deviation(manipulandum)
     coeff_sway_direction = compute_sway_direction(manipulandum)
     confidence_sway_area = compute_confidence_sway_area(manipulandum)
     principal_sway_direction = compute_principal_sway_direction(manipulandum)
 
-    return radius_signal, cov, avg, mean_dist_x, mean_dist_y, mean_dist_radius_signal, \
-        max_x, max_y, max_radius, rms_x, rms_y, rms_radius, \
-        range_x, range_y, range_xy, range_ratio, planar_deviation, \
-        coeff_sway_direction, confidence_sway_area, principal_sway_direction
+    manipulandum._results['positional'].update({
+        'dispersion': {
+            'cov': cov,
+            'avg': avg,
+            'mean_dist_x': mean_dist_x,
+            'mean_dist_y': mean_dist_y,
+            'mean_dist_radius_signal': mean_dist_radius_signal,
+            'max_x': max_x,
+            'max_y': max_y,
+            'max_radius': max_radius,
+            'rms_x': rms_x,
+            'rms_y': rms_y,
+            'rms_radius': rms_radius,
+            'max_x': max_x,
+            'max_y': max_y,
+            'range_x': range_x,
+            'range_y': range_y,
+            'range_xy': range_xy,
+            'range_ratio': range_ratio,
+            'planar_deviation': planar_deviation,
+            'coeff_sway_direction': coeff_sway_direction,
+            'confidence_sway_area': confidence_sway_area,
+            'principal_sway_direction': principal_sway_direction
+        }
+    })
+
+    return
